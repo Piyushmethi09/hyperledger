@@ -26,7 +26,8 @@ createChannelTx() {
 }
 
 createChannel() {
-	setGlobals 1
+	setGlobals 1 0
+	env | grep CORE_PEER
 	# Poll in case the raft leader is not set yet
 	local rc=1
 	local COUNTER=1
@@ -47,7 +48,8 @@ createChannel() {
 joinChannel() {
   FABRIC_CFG_PATH=$PWD/../config/
   ORG=$1
-  setGlobals $ORG
+  PEER=$2
+  setGlobals $ORG $PEER
 	local rc=1
 	local COUNTER=1
 	## Sometimes Join takes time, hence retry
@@ -66,7 +68,8 @@ joinChannel() {
 
 setAnchorPeer() {
   ORG=$1
-  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME 
+  PEER=$2
+  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME $PEER
 }
 
 FABRIC_CFG_PATH=${PWD}/configtx
@@ -84,15 +87,19 @@ createChannel
 successln "Channel '$CHANNEL_NAME' created"
 
 ## Join all the peers to the channel
-infoln "Joining org1 peer to the channel..."
-joinChannel 1
+infoln "Joining org1 peer0 to the channel..."
+joinChannel 1 0
+infoln "Joining org1 peer1 to the channel..."
+joinChannel 1 1
 infoln "Joining org2 peer to the channel..."
-joinChannel 2
+joinChannel 2 0
+infoln "Joining org2 peer0 to the channel..."
+joinChannel 2 1
 
 ## Set the anchor peers for each org in the channel
 infoln "Setting anchor peer for org1..."
-setAnchorPeer 1
+setAnchorPeer 1 0
 infoln "Setting anchor peer for org2..."
-setAnchorPeer 2
+setAnchorPeer 2 0
 
 successln "Channel '$CHANNEL_NAME' joined"

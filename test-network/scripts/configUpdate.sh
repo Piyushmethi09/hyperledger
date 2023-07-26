@@ -15,8 +15,9 @@ fetchChannelConfig() {
   ORG=$1
   CHANNEL=$2
   OUTPUT=$3
+  PEER=$4
 
-  setGlobals $ORG
+  setGlobals $ORG $PEER
 
   infoln "Fetching the most recent configuration block for the channel"
   set -x
@@ -54,8 +55,12 @@ createConfigUpdate() {
 signConfigtxAsPeerOrg() {
   ORG=$1
   CONFIGTXFILE=$2
-  setGlobals $ORG
+  PEER=$3
+  setGlobals $ORG $PEER
   set -x
   peer channel signconfigtx -f "${CONFIGTXFILE}"
   { set +x; } 2>/dev/null
 }
+
+
+# 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
